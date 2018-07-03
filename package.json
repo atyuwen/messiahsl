@@ -2,7 +2,7 @@
     "name": "messiahsl",
     "displayName": "MessiahSL",
     "description": "Messiah shader language extension",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "publisher": "messiah",
     "engines": {
         "vscode": "^1.24.0"
