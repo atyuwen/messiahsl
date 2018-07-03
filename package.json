@@ -1,0 +1,52 @@
+{
+    "name": "messiahsl",
+    "displayName": "MessiahSL",
+    "description": "Messiah shader language extension",
+    "version": "0.0.1",
+    "publisher": "messiah",
+    "engines": {
+        "vscode": "^1.24.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onLanguage:hlsl"
+    ],
+    "main": "./extension",
+    "contributes": {
+        "keybindings": [{
+            "command": "extension.ShaderLint",
+            "key": "ctrl+f7",
+            "mac": "cmd+f7",
+            "when": "editorTextFocus"
+        }],
+        "configuration": {
+            "type": "object",
+            "title": "MessiahSL",
+            "properties": {
+                "messiahsl.runOnSave": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Run shader lint on save."
+                },
+                "messiahsl.enginePath": {
+                    "type": ["string", "null"],
+                    "default": null,
+                    "description": "Specifies the folder path containing the messiah engine."
+                }
+            }
+        }
+    },
+    "scripts": {
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.6",
+        "eslint": "^4.11.0",
+        "@types/node": "^7.0.43",
+        "@types/mocha": "^2.2.42"
+    }
+}
