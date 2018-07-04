@@ -3,8 +3,9 @@
 const vscode = require('vscode');
 
 function ResolveFilePath(str) {
+    str = str.replace(/\\/g, '/');
     if (str.indexOf(":") >= 0) {
-        str = str.substr(str.lastIndexOf("\\\\") + 2);
+        return str;
     }
     let config = vscode.workspace.getConfiguration('messiahsl');
     let dirs = ["EngineShaders/", "EngineShaders/Include/", "Shaders/", "Shaders/Include/"];
@@ -35,6 +36,24 @@ function ShowDiagnostics(error) {
     return true;
 }
 
+function GenerateWebviewContent(properties) {
+    return `<!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body>
+            show me the money.
+        </body>
+    </html>`;
+}
+
+function ShowWebview(shader, out) {
+    const panel = vscode.window.createWebviewPanel('Properties', "[" + shader + "]", vscode.ViewColumn.Two, {});
+    panel.webview.html = GenerateWebviewContent();
+}
+
 function ShaderLint(context) {
     let doc = vscode.window.activeTextEditor.document;
     let colleciton = vscode.languages.createDiagnosticCollection(doc.fileName);
@@ -62,14 +81,19 @@ function ShaderLint(context) {
     exec(cmd, (err, stdout, stderr) => {
       if (err) {
         if (!ShowDiagnostics(stdout)) {
+            let error = stdout;
+            if (error == "") {
+                error = "An internal error has occurred in Messiah shader compiler."
+            }
             let out = vscode.window.createOutputChannel("MessiahSL");
-            out.appendLine(stdout);
+            out.appendLine(error);
             out.show(true);
         }
-        vscode.window.showErrorMessage("Compiled failed.");
+        vscode.window.showErrorMessage("<" + shader + "> Compiled failed.");
       }
       else {
-        vscode.window.showInformationMessage("Compiled successful.");
+        vscode.window.showInformationMessage("<" + shader + "> Compiled successful.");
+        //ShowWebview(shader, stdout);
       }
     });
 }
