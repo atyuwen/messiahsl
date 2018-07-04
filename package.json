@@ -3,12 +3,18 @@
     "displayName": "MessiahSL",
     "description": "Messiah shader language extension",
     "version": "1.0.0",
-    "publisher": "messiah",
+    "publisher": "Messiah Engine Team",
+    "icon": "icon.png",
+    "readme": "README.md",
+    "author": {
+        "name": "wuyuwen@corp.netease.com"
+    },
     "engines": {
         "vscode": "^1.24.0"
     },
     "categories": [
-        "Other"
+        "Programming Languages",
+        "Linters"
     ],
     "activationEvents": [
         "onLanguage:hlsl"
