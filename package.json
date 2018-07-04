@@ -2,8 +2,8 @@
     "name": "messiahsl",
     "displayName": "MessiahSL",
     "description": "Messiah shader language extension",
-    "version": "1.0.0",
-    "publisher": "Messiah Engine Team",
+    "version": "0.2.0",
+    "publisher": "atyuwen",
     "icon": "icon.png",
     "readme": "README.md",
     "author": {
@@ -21,12 +21,14 @@
     ],
     "main": "./extension",
     "contributes": {
-        "keybindings": [{
-            "command": "extension.ShaderLint",
-            "key": "ctrl+f7",
-            "mac": "cmd+f7",
-            "when": "editorTextFocus"
-        }],
+        "keybindings": [
+            {
+                "command": "extension.ShaderLint",
+                "key": "ctrl+f7",
+                "mac": "cmd+f7",
+                "when": "editorTextFocus"
+            }
+        ],
         "configuration": {
             "type": "object",
             "title": "MessiahSL",
@@ -37,7 +39,10 @@
                     "description": "Run shader lint on save."
                 },
                 "messiahsl.enginePath": {
-                    "type": ["string", "null"],
+                    "type": [
+                        "string",
+                        "null"
+                    ],
                     "default": null,
                     "description": "Specifies the folder path containing the messiah engine."
                 }
