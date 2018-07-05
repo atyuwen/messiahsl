@@ -2,6 +2,9 @@
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
 
+// Global definitions
+var outChannel = null;
+
 function ResolveFilePath(str) {
     str = str.replace(/\\/g, '/');
     if (str.indexOf(":") >= 0) {
@@ -20,19 +23,46 @@ function ResolveFilePath(str) {
     return str;
 }
 
-function ShowDiagnostics(error) {
-    let pat = /(.*)\(([0-9]+),([0-9]+)\):\s(.*)/i;
-    let ret = pat.exec(error)
+function ShowDiagnostics(error, showWarning) {
+    let patM = /(.*)\(([0-9]+),([0-9]+)\):\s(error|warning)(.*)/ig;
+    let patS = /(.*)\(([0-9]+),([0-9]+)\):\s(error|warning)(.*)/i;
+    if (!showWarning)
+    {
+        patM = /(.*)\(([0-9]+),([0-9]+)\):\s(error)(.*)/ig;
+        patS = /(.*)\(([0-9]+),([0-9]+)\):\s(error)(.*)/i;
+    }
+
+    let ret = patM.exec(error)
     if (ret == null) {
         return false;
     }
-    let row = parseInt(ret[2]) - 1;
-    let col = parseInt(ret[3]) - 1;
+
+    let matchSet = new Set();
+    while(ret != null)
+    {
+        matchSet.add(ret[0]);
+        ret = patM.exec(error);
+    }
+    let matchArray = Array.from(matchSet);
+
     let doc = vscode.window.activeTextEditor.document;
     let colleciton = vscode.languages.createDiagnosticCollection(doc.fileName);
-    let diag = [new vscode.Diagnostic(new vscode.Range(row, col, row, col + 1000), ret[4])];
-    let uri = vscode.Uri.file(ResolveFilePath(ret[1]));
-    let d = colleciton.set(uri, diag);
+
+    for (let i = 0; i < matchArray.length; i++) {
+        const str = matchArray[i];
+        let match = patS.exec(str);
+
+        let row = parseInt(match[2]) - 1;
+        let col = parseInt(match[3]) - 1;
+        var servity = match[4] == "error" ? vscode.DiagnosticSeverity.Error : vscode.DiagnosticSeverity.Warning;
+        let diag = [new vscode.Diagnostic(new vscode.Range(row, col, row, col + 1000), match[5], servity)];
+        let uri = vscode.Uri.file(ResolveFilePath(match[1]));
+ 
+        if (colleciton.has(uri)) {
+            diag = colleciton.get(uri).concat(diag);
+        }
+        colleciton.set(uri, diag);
+    }
     return true;
 }
 
@@ -44,7 +74,7 @@ function GenerateWebviewContent(properties) {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
         </head>
         <body>
-            show me the money.
+            set shader properties here?
         </body>
     </html>`;
 }
@@ -58,6 +88,7 @@ function ShaderLint(context) {
     let doc = vscode.window.activeTextEditor.document;
     let colleciton = vscode.languages.createDiagnosticCollection(doc.fileName);
     colleciton.clear();
+    outChannel.clear();
 
     let config = vscode.workspace.getConfiguration('messiahsl');
     if (config.enginePath == null) {
@@ -77,21 +108,25 @@ function ShaderLint(context) {
     shader = shader.substr(shader.indexOf("Shaders/") + 8);
 
     let cmd = linter + " --shader=" + shader;
+    if (config.autoRefresh) {
+        cmd = cmd + " --refresh=1";
+    }
+
     const { exec } = require('child_process');
     exec(cmd, (err, stdout, stderr) => {
       if (err) {
-        if (!ShowDiagnostics(stdout)) {
+        if (!ShowDiagnostics(stdout, config.showWarning)) {
             let error = stdout;
             if (error == "") {
                 error = "An internal error has occurred in Messiah shader compiler."
             }
-            let out = vscode.window.createOutputChannel("MessiahSL");
-            out.appendLine(error);
-            out.show(true);
+            outChannel.appendLine(error);
+            outChannel.show(true);
         }
         vscode.window.showErrorMessage("<" + shader + "> Compiled failed.");
       }
       else {
+        ShowDiagnostics(stdout, config.showWarning);
         vscode.window.showInformationMessage("<" + shader + "> Compiled successful.");
         //ShowWebview(shader, stdout);
       }
@@ -122,6 +157,7 @@ function activate(context) {
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
     console.log('MessiahSL is activated.');
+    outChannel = vscode.window.createOutputChannel("MessiahSL");
 }
 
 exports.activate = activate;

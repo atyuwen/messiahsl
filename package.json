@@ -33,11 +33,6 @@
             "type": "object",
             "title": "MessiahSL",
             "properties": {
-                "messiahsl.runOnSave": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Run shader lint on save."
-                },
                 "messiahsl.enginePath": {
                     "type": [
                         "string",
@@ -45,6 +40,21 @@
                     ],
                     "default": null,
                     "description": "Specifies the folder path containing the messiah engine."
+                },
+                "messiahsl.runOnSave": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Run shader lint on save."
+                },
+                "messiahsl.showWarning": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Print all D3D warngins."
+                },
+                "messiahsl.autoRefresh": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Auto refresh shader source when compiled."
                 }
             }
         }

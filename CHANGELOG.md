@@ -1,7 +1,10 @@
 # Change Log
-All notable changes to the "messiahsl" extension will be documented in this file.
+All notable changes to the MessiahSL extension will be documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+## 0.3.0
 
-## [Unreleased]
-- Initial release
+Print all D3D warnings.
+
+## 0.2.0
+
+Initial beta release.
