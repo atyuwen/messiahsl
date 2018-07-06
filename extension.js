@@ -23,15 +23,9 @@ function ResolveFilePath(str) {
     return str;
 }
 
-function ShowDiagnostics(error, showWarning) {
+function ShowDiagnostics(error, suppressWarning) {
     let patM = /(.*)\(([0-9]+),([0-9]+)\):\s(error|warning)(.*)/ig;
     let patS = /(.*)\(([0-9]+),([0-9]+)\):\s(error|warning)(.*)/i;
-    if (!showWarning)
-    {
-        patM = /(.*)\(([0-9]+),([0-9]+)\):\s(error)(.*)/ig;
-        patS = /(.*)\(([0-9]+),([0-9]+)\):\s(error)(.*)/i;
-    }
-
     let ret = patM.exec(error)
     if (ret == null) {
         return false;
@@ -47,14 +41,30 @@ function ShowDiagnostics(error, showWarning) {
 
     let doc = vscode.window.activeTextEditor.document;
     let colleciton = vscode.languages.createDiagnosticCollection(doc.fileName);
+    let suppressedWarnings = suppressWarning == null ? [] : suppressWarning.split(", ");
 
     for (let i = 0; i < matchArray.length; i++) {
         const str = matchArray[i];
         let match = patS.exec(str);
+        let message = match[5];
+        var servity = match[4] == "error" ? vscode.DiagnosticSeverity.Error : vscode.DiagnosticSeverity.Warning;
+
+        var suppressed = false;
+        if (servity == vscode.DiagnosticSeverity.Warning) {
+            for (let j = 0; j < suppressedWarnings.length; j++) {
+                const w = suppressedWarnings[j];
+                if (w != "" && (w == "*" || message.indexOf(w) >= 0)) {
+                    suppressed = true;
+                    break;    
+                }
+            }
+        }
+        if (suppressed) {
+            continue;
+        }
 
         let row = parseInt(match[2]) - 1;
         let col = parseInt(match[3]) - 1;
-        var servity = match[4] == "error" ? vscode.DiagnosticSeverity.Error : vscode.DiagnosticSeverity.Warning;
         let diag = [new vscode.Diagnostic(new vscode.Range(row, col, row, col + 1000), match[5], servity)];
         let uri = vscode.Uri.file(ResolveFilePath(match[1]));
  
@@ -115,7 +125,7 @@ function ShaderLint(context) {
     const { exec } = require('child_process');
     exec(cmd, (err, stdout, stderr) => {
       if (err) {
-        if (!ShowDiagnostics(stdout, config.showWarning)) {
+        if (!ShowDiagnostics(stdout, config.suppressWarning)) {
             let error = stdout;
             if (error == "") {
                 error = "An internal error has occurred in Messiah shader compiler."
@@ -126,7 +136,7 @@ function ShaderLint(context) {
         vscode.window.showErrorMessage("<" + shader + "> Compiled failed.");
       }
       else {
-        ShowDiagnostics(stdout, config.showWarning);
+        ShowDiagnostics(stdout, config.suppressWarning);
         vscode.window.showInformationMessage("<" + shader + "> Compiled successful.");
         //ShowWebview(shader, stdout);
       }

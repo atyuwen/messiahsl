@@ -2,7 +2,7 @@
     "name": "messiahsl",
     "displayName": "MessiahSL",
     "description": "Messiah shader language extension",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "publisher": "atyuwen",
     "icon": "icon.png",
     "readme": "README.md",
@@ -39,21 +39,24 @@
                         "null"
                     ],
                     "default": null,
-                    "description": "Specifies the folder path containing the messiah engine."
+                    "description": "Specify the folder path containing the messiah engine."
                 },
                 "messiahsl.runOnSave": {
                     "type": "boolean",
                     "default": true,
                     "description": "Run shader lint on save."
                 },
-                "messiahsl.showWarning": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Print all D3D warngins."
+                "messiahsl.suppressWarning": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "default": null,
+                    "description": "Specify which warnings should be suppressed."
                 },
                 "messiahsl.autoRefresh": {
                     "type": "boolean",
-                    "default": true,
+                    "default": false,
                     "description": "Auto refresh shader source when compiled."
                 }
             }

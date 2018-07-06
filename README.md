@@ -16,14 +16,14 @@ This extension contributes the following settings:
 
 * `messiahsl.enginePath`: Specify the engine path.
 * `messiahsl.runOnSave`: Enable/disable auto checking when file is saved.
-* `messiahsl.showWarning`: Enable/disable warning report.
-* `messiahsl.autoRefresh`: Auto refresh shader source if enabled.
+* `messiahsl.suppressWarning`: Specify which warnings should be suppressed.
+* `messiahsl.autoRefresh`: Auto refresh shader source when compiled.
 
 ## Release Notes
 
-### 0.3.0
+### 0.4.0
 
-Print all D3D warnings.
+All compile warnings wil be reported. Set 'messiahsl.suppressWarning' to suppress certain warnings.
 
 ### 0.2.0
 
