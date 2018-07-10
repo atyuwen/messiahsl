@@ -4,7 +4,11 @@ Messiah shader language extension for Visual Studio Code.
 
 ## Features
 
-Provide syntax checking for Messiah shader language. Press Ctrl + F7 to compile current file.
+Provide syntax checking for Messiah shader language. Three different lint modes are provided:
+
+* `Lint [Ctrl+F7]`: Lint current shader (default), very fast but only a subset of shader branches are checked.
+* `Lint Full (Fast) [Shift+Ctrl+F7]`: Run a fast lint, try to check all shader branches, but might introduce unexpected syntax errors.
+* `Lint Full (Slow)`: Run a full lint. All shader branches will be checked. It might take a very long time.
 
 ## Requirements
 
@@ -21,13 +25,9 @@ This extension contributes the following settings:
 
 ## Release Notes
 
-### 0.5.0
+### 0.6.0
 
-Added three different lint modes:
-
-* `Lint`: Run a default lint, very fast but only a subset of shader braches are checked.
-* `Lint Full (Fast)`: Run a fast lint, try to check all shader branches, but might introduce unexpected syntax errors.
-* `Lint Full (Slow)`: Run a full lint, all shader branches will be checked. Might be very SLOW.
+Added three different lint modes.
 
 ### 0.4.0
 

@@ -3,7 +3,8 @@
 const vscode = require('vscode');
 
 // Global definitions
-var outChannel = null;
+var outputChannel = null;
+var diagnosticCollection = null;
 var statusBarItem = null;
 
 function ResolveFilePath(str) {
@@ -25,8 +26,8 @@ function ResolveFilePath(str) {
 }
 
 function ShowDiagnostics(error, suppressWarning) {
-    let patM = /(.*)\(([0-9]+),([0-9]+)\):\s(error|warning)(.*)/ig;
-    let patS = /(.*)\(([0-9]+),([0-9]+)\):\s(error|warning)(.*)/i;
+    let patM = /(.*)\(([0-9]+),([0-9]+)\):\s(error|warning):(.*)/ig;
+    let patS = /(.*)\(([0-9]+),([0-9]+)\):\s(error|warning):(.*)/i;
     let ret = patM.exec(error)
     if (ret == null) {
         return false;
@@ -40,15 +41,14 @@ function ShowDiagnostics(error, suppressWarning) {
     }
     let matchArray = Array.from(matchSet);
 
-    let doc = vscode.window.activeTextEditor.document;
-    let colleciton = vscode.languages.createDiagnosticCollection(doc.fileName);
+    let colleciton = diagnosticCollection;
     let suppressedWarnings = suppressWarning == null ? [] : suppressWarning.split(", ");
 
     let errFounded = false;
     for (let i = 0; i < matchArray.length; i++) {
         const str = matchArray[i];
         let match = patS.exec(str);
-        let message = match[5];
+        let message = match[5].trim();
         var servity = match[4] == "error" ? vscode.DiagnosticSeverity.Error : vscode.DiagnosticSeverity.Warning;
 
         var suppressed = false;
@@ -57,7 +57,7 @@ function ShowDiagnostics(error, suppressWarning) {
                 const w = suppressedWarnings[j];
                 if (w != "" && (w == "*" || message.indexOf(w) >= 0)) {
                     suppressed = true;
-                    break;    
+                    break;
                 }
             }
         }
@@ -67,7 +67,7 @@ function ShowDiagnostics(error, suppressWarning) {
 
         let row = parseInt(match[2]) - 1;
         let col = parseInt(match[3]) - 1;
-        let diag = [new vscode.Diagnostic(new vscode.Range(row, col, row, col + 1000), match[5], servity)];
+        let diag = [new vscode.Diagnostic(new vscode.Range(row, col, row, col + 1000), message, servity)];
         let uri = vscode.Uri.file(ResolveFilePath(match[1]));
  
         if (colleciton.has(uri)) {
@@ -101,10 +101,8 @@ function ShowWebview(shader, out) {
 }
 
 function ShaderLint(context, full, fast) {
-    let doc = vscode.window.activeTextEditor.document;
-    let colleciton = vscode.languages.createDiagnosticCollection(doc.fileName);
-    colleciton.clear();
-    outChannel.clear();
+    diagnosticCollection.clear();
+    outputChannel.clear();
 
     let config = vscode.workspace.getConfiguration('messiahsl');
     if (config.enginePath == null) {
@@ -119,6 +117,7 @@ function ShaderLint(context, full, fast) {
         return;
     }
 
+    let doc = vscode.window.activeTextEditor.document;
     let parts = doc.fileName.split(".");
     let shader = parts[0].replace(/\\/g, '/');
     shader = shader.substr(shader.indexOf("Shaders/") + 8);
@@ -142,16 +141,16 @@ function ShaderLint(context, full, fast) {
             if (error == "") {
                 error = "An internal error has occurred in Messiah shader compiler."
             }
-            outChannel.appendLine(error);
-            outChannel.show(true);
+            outputChannel.appendLine(error);
+            outputChannel.show(true);
         }
         vscode.window.showErrorMessage("<" + shader + "> Compiled failed.");
       }
       else {
         ShowDiagnostics(stderr, config.suppressWarning);
         vscode.window.showInformationMessage("<" + shader + "> Compiled successful.");
-        outChannel.appendLine(stdout);
-        outChannel.show(true);
+        outputChannel.append(stdout);
+        //outputChannel.show(false);
         //ShowWebview(shader, stdout);
       }
       statusBarItem.hide();
@@ -162,7 +161,8 @@ function ShaderLint(context, full, fast) {
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 function activate(context) {
-    outChannel = vscode.window.createOutputChannel("MessiahSL");
+    outputChannel = vscode.window.createOutputChannel("MessiahSL");
+    diagnosticCollection = vscode.languages.createDiagnosticCollection("MessiahSL");
     statusBarItem = vscode.window.createStatusBarItem();
 
     // The command has been defined in the package.json file
@@ -170,10 +170,14 @@ function activate(context) {
     // The commandId parameter must match the command field in package.json
     let cmd0 = vscode.commands.registerCommand('extension.ShaderLint', function () {
         // The code you place here will be executed every time your command is executed
+        statusBarItem.text = "$(sync~spin) Running a simple lint... ";
+        statusBarItem.show();
         ShaderLint(context, false, false);
     });
     let cmd1 = vscode.commands.registerCommand('extension.ShaderLintFast', function () {
         // The code you place here will be executed every time your command is executed
+        statusBarItem.text = "$(sync~spin) Running a fast lint... ";
+        statusBarItem.show();
         ShaderLint(context, true, true);
     });
     let cmd2 = vscode.commands.registerCommand('extension.ShaderLintFull', function () {
@@ -201,7 +205,9 @@ function activate(context) {
 
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
-    console.log('MessiahSL is activated.');
+    //console.log('MessiahSL is activated.');
+    outputChannel.appendLine("MessiahSL is activated.");
+    outputChannel.show(true);
 }
 
 exports.activate = activate;

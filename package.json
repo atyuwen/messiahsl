@@ -2,7 +2,7 @@
     "name": "messiahsl",
     "displayName": "MessiahSL",
     "description": "Messiah shader language extension",
-    "version": "0.4.0",
+    "version": "0.6.0",
     "publisher": "atyuwen",
     "icon": "icon.png",
     "readme": "README.md",
@@ -41,7 +41,6 @@
                 "command": "extension.ShaderLint",
                 "key": "ctrl+f7",
                 "mac": "cmd+f7"
-                
             },
             {
                 "when": "resourceExtname == .fx",
