@@ -4,6 +4,7 @@ const vscode = require('vscode');
 
 // Global definitions
 var outChannel = null;
+var statusBarItem = null;
 
 function ResolveFilePath(str) {
     str = str.replace(/\\/g, '/');
@@ -153,7 +154,7 @@ function ShaderLint(context, full, fast) {
         outChannel.show(true);
         //ShowWebview(shader, stdout);
       }
-      vscode.window.setStatusBarMessage("");
+      statusBarItem.hide();
     });
 }
 
@@ -161,6 +162,8 @@ function ShaderLint(context, full, fast) {
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 function activate(context) {
+    outChannel = vscode.window.createOutputChannel("MessiahSL");
+    statusBarItem = vscode.window.createStatusBarItem();
 
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with  registerCommand
@@ -175,10 +178,11 @@ function activate(context) {
     });
     let cmd2 = vscode.commands.registerCommand('extension.ShaderLintFull', function () {
         // The code you place here will be executed every time your command is executed
-        vscode.window.setStatusBarMessage("A full lint might take a very long time, please wait... ");
+        statusBarItem.text = "$(sync~spin) A full lint might take a very long time, please wait... ";
+        statusBarItem.show();
         ShaderLint(context, true, false);
     });
- 
+
     context.subscriptions.push(cmd0);
     context.subscriptions.push(cmd1);
     context.subscriptions.push(cmd2);
@@ -198,7 +202,6 @@ function activate(context) {
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
     console.log('MessiahSL is activated.');
-    outChannel = vscode.window.createOutputChannel("MessiahSL");
 }
 
 exports.activate = activate;
