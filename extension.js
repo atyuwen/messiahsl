@@ -43,6 +43,7 @@ function ShowDiagnostics(error, suppressWarning) {
     let colleciton = vscode.languages.createDiagnosticCollection(doc.fileName);
     let suppressedWarnings = suppressWarning == null ? [] : suppressWarning.split(", ");
 
+    let errFounded = false;
     for (let i = 0; i < matchArray.length; i++) {
         const str = matchArray[i];
         let match = patS.exec(str);
@@ -72,8 +73,12 @@ function ShowDiagnostics(error, suppressWarning) {
             diag = colleciton.get(uri).concat(diag);
         }
         colleciton.set(uri, diag);
+
+        if (servity == vscode.DiagnosticSeverity.Error) {
+            errFounded = true;
+        }
     }
-    return true;
+    return errFounded;
 }
 
 function GenerateWebviewContent(properties) {
@@ -94,7 +99,7 @@ function ShowWebview(shader, out) {
     panel.webview.html = GenerateWebviewContent();
 }
 
-function ShaderLint(context) {
+function ShaderLint(context, full, fast) {
     let doc = vscode.window.activeTextEditor.document;
     let colleciton = vscode.languages.createDiagnosticCollection(doc.fileName);
     colleciton.clear();
@@ -121,11 +126,17 @@ function ShaderLint(context) {
     if (config.autoRefresh) {
         cmd = cmd + " --refresh=1";
     }
+    if (fast) {
+        cmd = cmd + " --fast=1";
+    }
+    if (full) {
+        cmd = cmd + " --full=1";
+    }
 
     const { exec } = require('child_process');
     exec(cmd, (err, stdout, stderr) => {
       if (err) {
-        if (!ShowDiagnostics(stdout, config.suppressWarning)) {
+        if (!ShowDiagnostics(stderr, config.suppressWarning)) {
             let error = stdout;
             if (error == "") {
                 error = "An internal error has occurred in Messiah shader compiler."
@@ -136,12 +147,16 @@ function ShaderLint(context) {
         vscode.window.showErrorMessage("<" + shader + "> Compiled failed.");
       }
       else {
-        ShowDiagnostics(stdout, config.suppressWarning);
+        ShowDiagnostics(stderr, config.suppressWarning);
         vscode.window.showInformationMessage("<" + shader + "> Compiled successful.");
+        outChannel.appendLine(stdout);
+        outChannel.show(true);
         //ShowWebview(shader, stdout);
       }
+      vscode.window.setStatusBarMessage("");
     });
 }
+
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -150,16 +165,32 @@ function activate(context) {
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with  registerCommand
     // The commandId parameter must match the command field in package.json
-    let disposable = vscode.commands.registerCommand('extension.ShaderLint', function () {
+    let cmd0 = vscode.commands.registerCommand('extension.ShaderLint', function () {
         // The code you place here will be executed every time your command is executed
-        ShaderLint(context);
+        ShaderLint(context, false, false);
     });
-    context.subscriptions.push(disposable);
+    let cmd1 = vscode.commands.registerCommand('extension.ShaderLintFast', function () {
+        // The code you place here will be executed every time your command is executed
+        ShaderLint(context, true, true);
+    });
+    let cmd2 = vscode.commands.registerCommand('extension.ShaderLintFull', function () {
+        // The code you place here will be executed every time your command is executed
+        vscode.window.setStatusBarMessage("A full lint might take a very long time, please wait... ");
+        ShaderLint(context, true, false);
+    });
+ 
+    context.subscriptions.push(cmd0);
+    context.subscriptions.push(cmd1);
+    context.subscriptions.push(cmd2);
 
     let config = vscode.workspace.getConfiguration('messiahsl');
     if (config.runOnSave) {
-        let onsave = vscode.workspace.onDidSaveTextDocument((event =>
-            ShaderLint(context)
+        let onsave = vscode.workspace.onDidSaveTextDocument((event => {
+                let ext = event.fileName.split('.').pop();
+                if (ext.toLowerCase() == 'fx') {
+                    ShaderLint(context, false, false);
+                }
+            }
         ));
         context.subscriptions.push(onsave);
     }

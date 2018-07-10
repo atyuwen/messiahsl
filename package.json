@@ -21,14 +21,54 @@
     ],
     "main": "./extension",
     "contributes": {
-        "keybindings": [
+        "commands": [
             {
                 "command": "extension.ShaderLint",
-                "key": "ctrl+f7",
-                "mac": "cmd+f7",
-                "when": "editorTextFocus"
+                "title": "Lint"
+            },
+            {
+                "command": "extension.ShaderLintFast",
+                "title": "Lint Full (Fast)"
+            },
+            {
+                "command": "extension.ShaderLintFull",
+                "title": "Lint Full (Slow)"
             }
         ],
+        "keybindings": [
+            {
+                "when": "resourceExtname == .fx",
+                "command": "extension.ShaderLint",
+                "key": "ctrl+f7",
+                "mac": "cmd+f7"
+                
+            },
+            {
+                "when": "resourceExtname == .fx",
+                "command": "extension.ShaderLintFast",
+                "key": "ctrl+shift+f7",
+                "mac": "cmd+shift+f7"
+            }
+        ],
+        "menus": {
+            "editor/context": [
+                {
+                    "when": "resourceExtname == .fx",
+                    "command": "extension.ShaderLint",
+                    "group": "2_messiahsl"
+                },
+                {
+                    "when": "resourceExtname == .fx",
+                    "command": "extension.ShaderLintFast",
+                    "group": "2_messiahsl"
+                },
+                {
+                    "when": "resourceExtname == .fx",
+                    "command": "extension.ShaderLintFull",
+                    "group": "2_messiahsl"
+                }
+            ]
+        },
         "configuration": {
             "type": "object",
             "title": "MessiahSL",
