@@ -1,0 +1,89 @@
+{
+	"If statement": {
+        "prefix": "if () {...}",
+        "body": [
+		  "if ($1)",
+		  "{",
+          "\t$0",
+          "}"
+        ],
+        "description": "if statement"
+	},
+	"If-else statement": {
+        "prefix": "if () {...} else {...}",
+        "body": [
+		  "if ($1)",
+		  "{",
+          "\t$2",
+		  "}",
+		  "else",
+		  "{",
+          "\t$0",
+		  "}"
+        ],
+        "description": "if-else statement"
+	},
+	"Else statement": {
+        "prefix": "else {...}",
+        "body": [
+		  "else",
+		  "{",
+          "\t$0",
+          "}"
+        ],
+        "description": "else statement"
+	},	
+	"For loop": {
+        "prefix": "for () {...}",
+        "body": [
+		  "for ($1)",
+		  "{",
+          "\t$0",
+          "}"
+        ],
+        "description": "for loop"
+	},
+	"Structure": {
+        "prefix": "struct {...}",
+        "body": [
+		  "struct ${1:MyStruct}",
+		  "{",
+          "\t$0",
+          "};"
+        ],
+        "description": "struct definition"
+	},
+	"CBuffer": {
+        "prefix": "cbuffer {...}",
+        "body": [
+		  "cbuffer ${1:MyBuffer}",
+		  "{",
+          "\t$0",
+          "};"
+        ],
+        "description": "cbuffer definition"
+	},
+	"Technique": {
+        "prefix": "technique {...}",
+        "body": [
+		  "technique ${1:MyTechnique}",
+		  "{",
+          "\tVertexShader = ${2:MyVertexShader}();",
+          "\tPixelShader = ${3:MyPixelShader}();",
+          "}$0"
+        ],
+        "description": "technique definition"
+	},
+	"Sampler": {
+        "prefix": "sampler {...}",
+        "body": [
+		  "sampler ${1:MySampler} : layout(s${2:0})",
+		  "{",
+		  "\tTexture = ${3:MyTexture};",
+		  "\tFilter = ${4|Linear,Point,Anisotropic|};",
+		  "\tAddress = ${5|Wrap,Mirror,Clamp,FromTexture|};",
+          "};$0"
+        ],
+        "description": "sampler definition"
+	}
+}

@@ -30,6 +30,12 @@
                 ]
             }
         ],
+        "snippets": [
+            {
+                "language": "hlsl",
+                "path": "./snippets/messiahsl.snippets.json"
+            }
+        ],
         "commands": [
             {
                 "command": "extension.ShaderLint",
