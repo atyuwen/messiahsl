@@ -148,7 +148,7 @@ function ShaderLint(context, full, fast) {
       }
       else {
         ShowDiagnostics(stderr, config.suppressWarning);
-        vscode.window.showInformationMessage("<" + shader + "> Compiled successful.");
+        vscode.window.showInformationMessage("<" + shader + "> Compiled successfully.");
         outputChannel.append(stdout);
         //outputChannel.show(false);
         //ShowWebview(shader, stdout);

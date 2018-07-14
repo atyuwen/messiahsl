@@ -21,6 +21,15 @@
     ],
     "main": "./extension",
     "contributes": {
+        "grammars": [
+            {
+                "scopeName": "source.messiahsl",
+                "path": "./syntaxes/messiahsl.tmLanguage.json",
+                "injectTo": [
+                    "source.hlsl"
+                ]
+            }
+        ],
         "commands": [
             {
                 "command": "extension.ShaderLint",

@@ -1,0 +1,52 @@
+{
+	"fileTypes": [],
+	"scopeName": "source.messiahsl",
+	"injectionSelector": "source.hlsl",
+	"name": "MessiahSL",	
+	"patterns": [
+		{
+			"name": "support.variable.semantic.messiahsl",
+			"match": "(?<=\\:\\s|\\:)(?i:TEXCOORDN)\\b"
+		},
+		{
+			"name": "support.variable.semantic.PF.messiahsl",
+			"match": "(?<=\\:\\s|\\:)PF_(View(Proj)?|CameraPos|CameraInfo|LightViewProjTex|SunColor|AmbientColor|SunDir|EnvInfo|FogColor|FogInfo|ShadowColor|ScreenColor|ReflectionPos|PlayerPos|Misc)\\b"
+		},
+		{
+			"name": "support.variable.semantic.PP.messiahsl",
+			"match": "(?<=\\:\\s|\\:)PP_ScreenInfo\\b"
+		},
+		{
+			"name": "support.variable.semantic.PM.messiahsl",
+			"match": "(?<=\\:\\s|\\:)PM_Options\\b"
+		},
+		{
+			"name": "support.variable.semantic.PB.messiahsl",
+			"match": "(?<=\\:\\s|\\:)PB_(World(View)?|WorldViewProj|LastWorldViewProjTex|Color|Param2?|VirtualLitDir|VirtualLitColor|CamearDir|TintColor[1-3]|ShadowBias)\\b"
+		},
+		{
+			"name": "support.variable.semantic.PL.messiahsl",
+			"match": "(?<=\\:\\s|\\:)PL_Light[0-2]\\b"
+		},
+		{
+			"name": "support.variable.semantic.PI.messiahsl",
+			"match": "(?<=\\:\\s|\\:)PI_(Skeleton|Deformation|Instance)\\b"
+		},
+		{
+			"name": "support.variable.semantic.SP.messiahsl",
+			"match": "(?<=\\:\\s|\\:)SP_(PointCloud|Debug|UserData)\\b"
+		},
+		{
+			"name": "meta.object-literal.key.fx.messiahsl",
+			"match": "\\b(Predict|Fallback|Texture|Address|MaxMipLevel|SRGB|Name|Description|Visible|AffectedTex|Default|MinFilter|MagFilter|MipFilter)\\b"
+		},	
+		{
+			"name": "support.constant.property-value.fx.filter.messiahsl",
+			"match": "\\b(?i:POINT|LINEAR|ANISOTROPIC|FromTexture)\\b"
+		},
+		{
+			"name": "support.constant.property-value.attribute.messiahsl",
+			"match": "@_[a-zA-Z][a-zA-Z0-9_]*\\b"
+		}
+	]
+}
