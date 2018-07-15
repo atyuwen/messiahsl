@@ -1,8 +1,8 @@
 {
-	"fileTypes": [],
+	"fileTypes": ["fx", "fxh"],
 	"scopeName": "source.messiahsl",
-	"injectionSelector": "source.hlsl",
-	"name": "MessiahSL",	
+	"injectionSelector": "source.hlsl -comment",
+	"name": "MessiahSL",
 	"patterns": [
 		{
 			"name": "support.variable.semantic.messiahsl",
