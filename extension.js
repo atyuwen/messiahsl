@@ -1,11 +1,12 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
+const documentSymbolProvider = require('./services/symbolProvider').documentSymbolProvider;
 
-// Global definitions
-var outputChannel = null;
-var diagnosticCollection = null;
-var statusBarItem = null;
+// Global definitions;
+let outputChannel = null;
+let diagnosticCollection = null;
+let statusBarItem = null;
 
 function ResolveFilePath(str) {
     str = str.replace(/\\/g, '/');
@@ -49,9 +50,9 @@ function ShowDiagnostics(error, suppressWarning) {
         const str = matchArray[i];
         let match = patS.exec(str);
         let message = match[5].trim();
-        var servity = match[4] == "error" ? vscode.DiagnosticSeverity.Error : vscode.DiagnosticSeverity.Warning;
+        let servity = match[4] == "error" ? vscode.DiagnosticSeverity.Error : vscode.DiagnosticSeverity.Warning;
 
-        var suppressed = false;
+        let suppressed = false;
         if (servity == vscode.DiagnosticSeverity.Warning) {
             for (let j = 0; j < suppressedWarnings.length; j++) {
                 const w = suppressedWarnings[j];
@@ -202,6 +203,9 @@ function activate(context) {
         ));
         context.subscriptions.push(onsave);
     }
+
+    // Register services
+    context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider("hlsl", documentSymbolProvider));
 
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
