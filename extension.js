@@ -108,6 +108,8 @@ function ShaderLint(context, full, fast) {
     let config = vscode.workspace.getConfiguration('messiahsl');
     if (config.enginePath == null) {
         vscode.window.showErrorMessage("Please set 'enginePath' in configuration.");
+        statusBarItem.text = "";
+        statusBarItem.hide();
         return;
     }
     
@@ -115,6 +117,8 @@ function ShaderLint(context, full, fast) {
     let fs = require('fs');
     if (!fs.existsSync(linter)) {
         vscode.window.showErrorMessage("Cannot locate ShaderLint_x64h.exe in specified engine path.");
+        statusBarItem.text = "";
+        statusBarItem.hide();
         return;
     }
 
@@ -154,10 +158,10 @@ function ShaderLint(context, full, fast) {
         //outputChannel.show(false);
         //ShowWebview(shader, stdout);
       }
+      statusBarItem.text = "";
       statusBarItem.hide();
     });
 }
-
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -169,22 +173,25 @@ function activate(context) {
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with  registerCommand
     // The commandId parameter must match the command field in package.json
-    let cmd0 = vscode.commands.registerCommand('extension.ShaderLint', function () {
+    let cmd0 = vscode.commands.registerCommand('extension.ShaderLint', async function () {
         // The code you place here will be executed every time your command is executed
         statusBarItem.text = "$(sync~spin) Running a simple lint... ";
         statusBarItem.show();
+        await vscode.window.activeTextEditor.document.save();
         ShaderLint(context, false, false);
     });
-    let cmd1 = vscode.commands.registerCommand('extension.ShaderLintFast', function () {
+    let cmd1 = vscode.commands.registerCommand('extension.ShaderLintFast', async function () {
         // The code you place here will be executed every time your command is executed
         statusBarItem.text = "$(sync~spin) Running a fast lint... ";
         statusBarItem.show();
+        await vscode.window.activeTextEditor.document.save();
         ShaderLint(context, true, true);
     });
-    let cmd2 = vscode.commands.registerCommand('extension.ShaderLintFull', function () {
+    let cmd2 = vscode.commands.registerCommand('extension.ShaderLintFull', async function () {
         // The code you place here will be executed every time your command is executed
         statusBarItem.text = "$(sync~spin) A full lint might take a very long time, please wait... ";
         statusBarItem.show();
+        await vscode.window.activeTextEditor.document.save();
         ShaderLint(context, true, false);
     });
 
@@ -196,7 +203,7 @@ function activate(context) {
     if (config.runOnSave) {
         let onsave = vscode.workspace.onDidSaveTextDocument((event => {
                 let ext = event.fileName.split('.').pop();
-                if (ext.toLowerCase() == 'fx') {
+                if (ext.toLowerCase() == 'fx' && statusBarItem.text == "") {
                     ShaderLint(context, false, false);
                 }
             }
