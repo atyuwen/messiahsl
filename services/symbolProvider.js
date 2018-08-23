@@ -4,9 +4,9 @@ const SymbolInformation = vscode.SymbolInformation;
 const Location = vscode.Location;
 
 const symbolPatterns = [
-    { kind: SymbolKind.Function,    pattern: /^[^\S\n]*\w+\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/gm },
-    { kind: SymbolKind.Struct,      pattern: /^[^\S\n]*(?:struct|cbuffer)\s+([a-zA-Z_][a-zA-Z0-9_]*)/gm },
-    { kind: SymbolKind.Interface,   pattern: /^[^\S\n]*(?:technique)\s+([a-zA-Z_][a-zA-Z0-9_]*)/gm },
+    { kind: SymbolKind.Function,    pattern: /^[^\S\n]*\w+\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/.source },
+    { kind: SymbolKind.Struct,      pattern: /^[^\S\n]*(?:struct|cbuffer)\s+([a-zA-Z_][a-zA-Z0-9_]*)/.source },
+    { kind: SymbolKind.Interface,   pattern: /^[^\S\n]*(?:technique)\s+([a-zA-Z_][a-zA-Z0-9_]*)/.source },
 ];
 
 const keyWords = new Set(['if', 'while', 'for']);
@@ -16,7 +16,7 @@ function findAllSymbols(document) {
     let symbols = [];
     for (let item of symbolPatterns) {
         let kind = item.kind;
-        let pattern = item.pattern;
+        let pattern = new RegExp(item.pattern, "gm");
         let match = null;
         while (match = pattern.exec(text))
         {

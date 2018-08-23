@@ -5,35 +5,35 @@ const Location = vscode.Location;
 
 let DocumentDefinitions = new Map();
 
-const includePattern = /^#\s*include\s*[<"](.*)[>"]/gm
+const includePattern = /^#\s*include\s*[<"](.*)[>"]/.source;
 
 const definitionPatterns = [
     {
         type: "regular",
-        regex: /^[^\S\n]*(?:struct|technique|texture2D|sampler)\s+([a-zA-Z_][a-zA-Z0-9_]*)/gm,
+        regex: /^[^\S\n]*(?:struct|technique|texture2D|sampler)\s+([a-zA-Z_][a-zA-Z0-9_]*)/.source,
     },
     {
         type: "regular",
-        regex: /^[^\S\n]*@_([a-zA-Z][a-zA-Z0-9_]*)/gm,
+        regex: /^[^\S\n]*@_([a-zA-Z][a-zA-Z0-9_]*)/.source,
     },
     {
         type: "regular",
-        regex: /^[^\S\n]*#\s*define\s+([a-zA-Z_][a-zA-Z0-9_]*)(?:[^\S\n]+(?:\w.*)?)?$/gm,
+        regex: /^[^\S\n]*#\s*define\s+([a-zA-Z_][a-zA-Z0-9_]*)(?:[^\S\n]+(?:\w.*)?)?$/.source,
     },
     {
         type: "cbuffer",
-        regex: /^[^\S\n]*cbuffer\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*{((?:\s*[a-zA-Z_][a-zA-Z0-9_]*[^\S\n]+[a-zA-Z_][a-zA-Z0-9_]*.*)*)\s*}/gm,
-        field: /^[^\S\n]*[a-zA-Z_][a-zA-Z0-9_]*[^\S\n]+([a-zA-Z_][a-zA-Z0-9_]*).*$/gm,
+        regex: /^[^\S\n]*cbuffer\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*{((?:\s*[a-zA-Z_][a-zA-Z0-9_]*[^\S\n]+[a-zA-Z_][a-zA-Z0-9_]*.*)*)\s*}/.source,
+        field: /^[^\S\n]*[a-zA-Z_][a-zA-Z0-9_]*[^\S\n]+([a-zA-Z_][a-zA-Z0-9_]*).*$/.source,
     },
     {
         type: "callable",
-        regex: /^[^\S\n]*#\s*define\s+([a-zA-Z_][a-zA-Z0-9_]*)[^\S\n]*\(.*\)$/gm,
-        param: /[a-zA-Z][a-zA-Z0-9_]*/gm,
+        regex: /^[^\S\n]*#\s*define\s+([a-zA-Z_][a-zA-Z0-9_]*)[^\S\n]*\(.*\)$/.source,
+        param: /[a-zA-Z][a-zA-Z0-9_]*/.source,
     },
     {
         type: "callable",
-        regex: /^[^\S\n]*\w+\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^()]*)\)/gm,
-        param: /(?:(?:in|out|inout)\s+)?[a-zA-Z][a-zA-Z0-9_]*\s+[a-zA-Z][a-zA-Z0-9_]*(?:\s*:[a-zA-Z0-9_]+)?/gm,
+        regex: /^[^\S\n]*\w+\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^()]*)\)/.source,
+        param: /(?:(?:in|out|inout)\s+)?[a-zA-Z][a-zA-Z0-9_]*\s+[a-zA-Z][a-zA-Z0-9_]*(?:\s*:[a-zA-Z0-9_]+)?/.source,
     },
 ];
 
@@ -79,7 +79,8 @@ async function findAllDefinitionsRecursive(document, definitions, visited) {
 
     for (let item of definitionPatterns) {
         let match = null;
-        while (match = item.regex.exec(text))
+        let regex = new RegExp(item.regex, "gm");
+        while (match = regex.exec(text))
         {
             if (item.type == "regular") {
                 let line = document.positionAt(match.index).line;
@@ -92,8 +93,9 @@ async function findAllDefinitionsRecursive(document, definitions, visited) {
                 defs.push(def);
             }
             else if (item.type == "cbuffer") {
+                let fieldRegex = new RegExp(item.field, "gm");
                 let field = null;
-                while (field = item.field.exec(match[2])) {
+                while (field = fieldRegex.exec(match[2])) {
                     let offset = match[0].indexOf(field[0]);
                     let line = document.positionAt(match.index + offset);
                     let range = document.lineAt(line).range;
@@ -111,8 +113,9 @@ async function findAllDefinitionsRecursive(document, definitions, visited) {
                 let line = document.positionAt(match.index).line;
                 let range = document.lineAt(line).range;
                 let params = [];
+                let paramRegex = new RegExp(item.param, "gm");
                 let param = null;
-                while (param = item.param.exec(match[2])) {
+                while (param = paramRegex.exec(match[2])) {
                     params.push(param[0]);
                 }
                 let def = {
@@ -126,8 +129,9 @@ async function findAllDefinitionsRecursive(document, definitions, visited) {
         }
     }
 
+    let includeRegex = new RegExp(includePattern, "gm");
     let include = null;
-    while (include = includePattern.exec(text)) {
+    while (include = includeRegex.exec(text)) {
         let path = ResolveFilePath(include[1]);
         let doc = null;
         try {
@@ -151,10 +155,10 @@ async function findAllDefinitionsRecursive(document, definitions, visited) {
     DocumentDefinitions.set(uri, cache);
 }
 
-function findAllDefinitions(document) {
+async function findAllDefinitions(document) {
     let definitions = [];
     let visited = new Set();
-    findAllDefinitionsRecursive(document, definitions, visited)
+    await findAllDefinitionsRecursive(document, definitions, visited)
     return definitions;
 }
 
@@ -168,15 +172,22 @@ exports.definitionProvider = {
                     reject();
                 }
  
-                let results = [];
-                let symbol = document.getText(wordRange);
-                let definitions = findAllDefinitions(document);
-                for (let definition of definitions) {
-                    if (definition.name === symbol) {
-                        results.push(definition.location);
+                let symbol = document.getText(wordRange); 
+                findAllDefinitions(document).then(
+                    (definitions) => {
+                        let results = [];
+                        for (let definition of definitions) {
+                            if (definition.name === symbol) {
+                                results.push(definition.location);
+                            }
+                        }
+                        resolve(results);
                     }
-                }
-                resolve(results);
+                ).catch(
+                    (error) => {
+                        reject();
+                    }
+                );
             }
         );
     }
