@@ -18,11 +18,12 @@ const definitionPatterns = [
     },
     {
         type: "regular",
-        regex: /^[^\S\n]*#\s*define\s+([a-zA-Z_][a-zA-Z0-9_]*)(?:[^\S\n].*)?$/.source,
+        regex: /^[^\S\n]*#\s*define\s+([a-zA-Z_][a-zA-Z0-9_]*)\s/.source,
     },
     {
         type: "cbuffer",
-        regex: /^[^\S\n]*cbuffer\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*{((?:\s*[a-zA-Z_][a-zA-Z0-9_]*[^\S\n]+[a-zA-Z_][a-zA-Z0-9_]*.*)*)\s*}/.source,
+        regex: /^[^\S\n]*cbuffer\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*{/.source,
+        end:   /^[^\S\n]*(?:{|}|struct|technique|texture2D|sampler|@})\W/.source,
         field: /^[^\S\n]*[a-zA-Z_][a-zA-Z0-9_]*[^\S\n]+([a-zA-Z_][a-zA-Z0-9_]*).*$/.source,
     },
     {
@@ -91,11 +92,19 @@ async function findAllDefinitionsRecursive(document, definitions, visited) {
                 defs.push(def);
             }
             else if (item.type == "cbuffer") {
+                let endRegex = new RegExp(item.end, "gm");
+                let startIndex = match.index + match[0].length;
+                endRegex.lastIndex = startIndex;
+                let end = endRegex.exec(text);
+                let content = "";
+                if (end) {
+                    content = text.substring(startIndex, end.index);
+                }
+
                 let fieldRegex = new RegExp(item.field, "gm");
                 let field = null;
-                while (field = fieldRegex.exec(match[2])) {
-                    let offset = match[0].indexOf(field[0]);
-                    let line = document.positionAt(match.index + offset);
+                while (field = fieldRegex.exec(content)) {
+                    let line = document.positionAt(startIndex + field.index);
                     let range = document.lineAt(line).range;
                     let def = {
                         type : "cbuffer",
@@ -166,6 +175,7 @@ exports.definitionProvider = {
                 let wordRange = document.getWordRangeAtPosition(position);
                 if (!wordRange) {
                     reject();
+                    return;
                 }
  
                 let symbol = document.getText(wordRange); 
