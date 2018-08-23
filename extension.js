@@ -113,7 +113,7 @@ function ShaderLint(context, full, fast) {
         statusBarItem.hide();
         return;
     }
-    
+
     let linter = config.enginePath + '/Engine/Binaries/Win64/ShaderLint_x64h.exe';
     let fs = require('fs');
     if (!fs.existsSync(linter)) {
@@ -170,6 +170,7 @@ function activate(context) {
     outputChannel = vscode.window.createOutputChannel("MessiahSL");
     diagnosticCollection = vscode.languages.createDiagnosticCollection("MessiahSL");
     statusBarItem = vscode.window.createStatusBarItem();
+    statusBarItem.text = "";
 
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with  registerCommand
@@ -201,11 +202,17 @@ function activate(context) {
     context.subscriptions.push(cmd2);
 
     let config = vscode.workspace.getConfiguration('messiahsl');
-    if (config.runOnSave) {
+    if (config.runOnSave != "Disabled") {
         let onsave = vscode.workspace.onDidSaveTextDocument((event => {
                 let ext = event.fileName.split('.').pop();
                 if (ext.toLowerCase() == 'fx' && statusBarItem.text == "") {
-                    ShaderLint(context, false, false);
+                    if (config.runOnSave == "Lint") {
+                        ShaderLint(context, false, false);
+                    } else if (config.runOnSave == "LintFast") {
+                        ShaderLint(context, true, true);
+                    } else if (config.runOnSave == "LintFull") {
+                        ShaderLint(context, true, false);
+                    }
                 }
             }
         ));

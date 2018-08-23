@@ -24,11 +24,11 @@ const definitionPatterns = [
         type: "cbuffer",
         regex: /^[^\S\n]*cbuffer\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*{/.source,
         end:   /^[^\S\n]*(?:{|}|struct|technique|texture2D|sampler|@})\W/.source,
-        field: /^[^\S\n]*[a-zA-Z_][a-zA-Z0-9_]*[^\S\n]+([a-zA-Z_][a-zA-Z0-9_]*).*$/.source,
+        field: /^[^\S\n]*[a-zA-Z_][a-zA-Z0-9_]*[^\S\n]+([a-zA-Z_][a-zA-Z0-9_]*)/.source,
     },
     {
         type: "callable",
-        regex: /^[^\S\n]*#\s*define\s+([a-zA-Z_][a-zA-Z0-9_]*)\(.*\)$/.source,
+        regex: /^[^\S\n]*#\s*define\s+([a-zA-Z_][a-zA-Z0-9_]*)\(.*\)/.source,
         param: /[a-zA-Z][a-zA-Z0-9_]*/.source,
     },
     {

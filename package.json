@@ -2,7 +2,7 @@
     "name": "messiahsl",
     "displayName": "MessiahSL",
     "description": "Messiah shader language extension",
-    "version": "0.6.0",
+    "version": "0.8.0",
     "publisher": "atyuwen",
     "icon": "icon.png",
     "readme": "README.md",
@@ -54,12 +54,18 @@
             {
                 "when": "resourceExtname == .fx",
                 "command": "extension.ShaderLint",
+                "key": "f7",
+                "mac": "f7"
+            },
+            {
+                "when": "resourceExtname == .fx",
+                "command": "extension.ShaderLintFast",
                 "key": "ctrl+f7",
                 "mac": "cmd+f7"
             },
             {
                 "when": "resourceExtname == .fx",
-                "command": "extension.ShaderLintFast",
+                "command": "extension.ShaderLintFull",
                 "key": "ctrl+shift+f7",
                 "mac": "cmd+shift+f7"
             }
@@ -96,9 +102,15 @@
                     "description": "Specify the folder path containing the messiah engine."
                 },
                 "messiahsl.runOnSave": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Run shader lint on save."
+                    "type": "string",
+                    "enum": [
+                        "Disabled",
+                        "Lint",
+                        "LintFast",
+                        "LintFull"
+                    ],
+                    "default": "Lint",
+                    "description": "Choose an action to run when source file is saved."
                 },
                 "messiahsl.suppressWarning": {
                     "type": [
@@ -106,12 +118,12 @@
                         "null"
                     ],
                     "default": null,
-                    "description": "Specify which warnings should be suppressed."
+                    "description": "Specify which warnings will be suppressed. use '*' to suppress all."
                 },
                 "messiahsl.autoRefresh": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Auto refresh shader source when compiled."
+                    "description": "Auto refresh shader source when a fast-lint or full-lint is completed."
                 }
             }
         }
