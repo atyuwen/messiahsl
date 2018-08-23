@@ -14,7 +14,7 @@ const definitionPatterns = [
     },
     {
         type: "regular",
-        regex: /^[^\S\n]*@_([a-zA-Z][a-zA-Z0-9_]*)/.source,
+        regex: /^[^\S\n]*@(_[a-zA-Z][a-zA-Z0-9_]*)/.source,
     },
     {
         type: "regular",
@@ -32,12 +32,10 @@ const definitionPatterns = [
     },
     {
         type: "callable",
-        regex: /^[^\S\n]*\w+\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^()]*)\)/.source,
+        regex: /^[^\S\n]*(?!(?:return|else|do)\s)\w+\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^()]*)\)/.source,
         param: /(?:(?:in|out|inout)\s+)?[a-zA-Z][a-zA-Z0-9_]*\s+[a-zA-Z][a-zA-Z0-9_]*(?:\s*:[a-zA-Z0-9_]+)?/.source,
     },
 ];
-
-const keyWords = new Set(['if', 'while', 'for']);
 
 function ResolveFilePath(str) {
     str = str.replace(/\\/g, '/');
@@ -108,8 +106,6 @@ async function findAllDefinitionsRecursive(document, definitions, visited) {
                 }
             }
             else if (item.type == "callable") {
-                if (keyWords.has(match[1]))
-                    continue;
                 let line = document.positionAt(match.index).line;
                 let range = document.lineAt(line).range;
                 let params = [];
