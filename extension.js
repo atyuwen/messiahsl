@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
 const documentSymbolProvider = require('./services/symbolProvider').documentSymbolProvider;
+const definitionProvider = require('./services/definitionProvider').definitionProvider;
 
 // Global definitions;
 let outputChannel = null;
@@ -213,6 +214,7 @@ function activate(context) {
 
     // Register services
     context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider("hlsl", documentSymbolProvider));
+    context.subscriptions.push(vscode.languages.registerDefinitionProvider("hlsl", definitionProvider));
 
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
