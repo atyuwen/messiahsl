@@ -2,10 +2,11 @@ const vscode = require('vscode');
 const SymbolKind = vscode.SymbolKind;
 const SymbolInformation = vscode.SymbolInformation;
 const Location = vscode.Location;
+const Uri = vscode.Uri;
 
 let DocumentDefinitions = new Map();
 
-const includePattern = /^#\s*include\s*[<"](.*)[>"]/.source;
+const includePattern = /^[^\S\n]*#\s*include\s*[<"](.*)[>"]/.source;
 
 const definitionPatterns = [
     {
@@ -56,6 +57,21 @@ function ResolveFilePath(str) {
     return str;
 }
 
+async function findDocumentByUri(uri) {
+    for (let doc of vscode.workspace.textDocuments) {
+        if (doc.uri == uri) {
+            return doc;
+        }
+    }
+    try {
+        let doc = await vscode.workspace.openTextDocument(uri);
+        return doc;
+    } catch (error) {
+        // open document failed.
+    }
+    return null;
+}
+
 async function findAllDefinitionsRecursive(document, definitions, visited) {
     let uri = document.uri;
     if (visited.has(uri)) {
@@ -63,11 +79,18 @@ async function findAllDefinitionsRecursive(document, definitions, visited) {
     }
     visited.add(uri);
 
+    // If already cached.
     if (DocumentDefinitions.has(uri)) {
         let cache = DocumentDefinitions.get(uri);
         if (cache.version == document.version) {
             for (let def of cache.definitions) {
                 definitions.push(def);
+            }
+            for (let header of cache.includes) {
+                let doc = await findDocumentByUri(header);
+                if (doc) {
+                    findAllDefinitionsRecursive(doc, definitions, visited);
+                }           
             }
             return;
         }
@@ -76,6 +99,7 @@ async function findAllDefinitionsRecursive(document, definitions, visited) {
     let text = document.getText();
     let defs = [];
 
+    // Find definitions in current document.
     for (let item of definitionPatterns) {
         let match = null;
         let regex = new RegExp(item.regex, "gm");
@@ -133,29 +157,27 @@ async function findAllDefinitionsRecursive(document, definitions, visited) {
             }
         }
     }
+    for (let def of defs) {
+        definitions.push(def);
+    }
 
+    // Process header files.
     let includeRegex = new RegExp(includePattern, "gm");
+    let includes = [];
     let include = null;
     while (include = includeRegex.exec(text)) {
         let path = ResolveFilePath(include[1]);
-        let doc = null;
-        try {
-            doc = await vscode.workspace.openTextDocument(path);
-        } catch (error) {
-            // open document failed.
-        }
+        let doc = await findDocumentByUri(Uri.file(path));
         if (doc) {
-            findAllDefinitionsRecursive(doc, defs, visited);
+            findAllDefinitionsRecursive(doc, definitions, visited);
+            includes.push(doc.uri);
         }
-    }
-
-    for (let def of defs) {
-        definitions.push(def);
     }
 
     let cache = {
         version : document.version,
         definitions : defs,
+        includes : includes,
     };
     DocumentDefinitions.set(uri, cache);
 }
