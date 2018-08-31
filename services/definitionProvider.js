@@ -29,7 +29,7 @@ const definitionPatterns = [
     },
     {
         type: "callable",
-        regex: /^[^\S\n]*#\s*define\s+([a-zA-Z_][a-zA-Z0-9_]*)\(.*\)/.source,
+        regex: /^[^\S\n]*#\s*define\s+([a-zA-Z_][a-zA-Z0-9_]*)\(([^\n()]*)\)/.source,
         param: /[a-zA-Z][a-zA-Z0-9_]*/.source,
     },
     {

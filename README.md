@@ -8,7 +8,7 @@ Provides syntax checking for Messiah shader language. Three different lint modes
 
 * `Lint` [`F7`] : Lint current shader (default), very fast but only a subset of shader branches are checked.
 * `Lint Full (Fast)` [`Ctrl`+`F7`] : Run a fast lint, try to check all shader branches, but might introduce unexpected syntax errors.
-* `Lint Full (Slow)` : Run a full lint. All shader branches will be checked. It might take a very long time.
+* `Lint Full (Slow)` [`Ctrl`+`Shift`+`F7`] : Run a full lint. All shader branches will be checked. It might take a very long time.
 
 Provides syntax highlighting and code snippets, as well as some language services including:
 
