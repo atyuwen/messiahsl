@@ -4,6 +4,7 @@ const vscode = require('vscode');
 const documentSymbolProvider = require('./services/symbolProvider').documentSymbolProvider;
 const definitionProvider = require('./services/definitionProvider').definitionProvider;
 const signatureProvider = require('./services/signatureProvider').signatureProvider;
+const completionProvider = require('./services/completionProvider').completionProvider;
 
 // Global definitions;
 let outputChannel = null;
@@ -224,6 +225,7 @@ function activate(context) {
     context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider("hlsl", documentSymbolProvider));
     context.subscriptions.push(vscode.languages.registerDefinitionProvider("hlsl", definitionProvider));
     context.subscriptions.push(vscode.languages.registerSignatureHelpProvider("hlsl", signatureProvider, '(', ',', ' '));
+    context.subscriptions.push(vscode.languages.registerCompletionItemProvider("hlsl", completionProvider, '.'));
 
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated

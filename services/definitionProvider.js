@@ -15,7 +15,7 @@ const definitionPatterns = [
     },
     {
         type: "regular",
-        regex: /^[^\S\n]*@(_[a-zA-Z][a-zA-Z0-9_]*)/.source,
+        regex: /^[^\S\n]*(@_[a-zA-Z][a-zA-Z0-9_]*)/.source,
     },
     {
         type: "regular",
@@ -200,7 +200,12 @@ exports.definitionProvider = {
                     return;
                 }
  
-                let symbol = document.getText(wordRange); 
+                let symbol = document.getText(wordRange);
+                let start = document.offsetAt(wordRange.start);
+                if (start > 0 && document.getText()[start - 1] == '@') {
+                    symbol = '@' + symbol;
+                }
+
                 findAllDefinitions(document).then(
                     (definitions) => {
                         let results = [];
