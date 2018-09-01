@@ -2,13 +2,15 @@ const vscode = require('vscode');
 const SignatureHelp = vscode.SignatureHelp;
 const SignatureInformation = vscode.SignatureInformation;
 const ParameterInformation = vscode.ParameterInformation;
+const MarkDownString = vscode.MarkdownString;
 const findAllDefinitions = require('./definitionProvider').findAllDefinitions;
+const intrinsicfunctions = require('./intrinsics').intrinsicfunctions;
 
 function reverseString(str) {
     return str.split('').reverse().join('');
 };
 
-const callPattern = /\s*((?:,\s*\w+\s*)*)\(\s*(\w+)\s*/;
+const callPattern = /\s*((?:,\s*\w+\s*)*)\(\s*(\w+\.?)\s*/;
 
 async function generateSignatureHelp(document, position) {
     let end = document.offsetAt(position);
@@ -28,12 +30,17 @@ async function generateSignatureHelp(document, position) {
         }
     }
 
-    let definitions = await findAllDefinitions(document);
-    let callable = null;
-    for (let def of definitions) {
-        if (def.type == "callable" && def.name == func) {
-            callable = def;
-            break;
+    let isIntrinsic = false;
+    let callable = intrinsicfunctions[func];
+    if (callable) {
+        isIntrinsic = true;
+    } else {
+        let definitions = await findAllDefinitions(document);
+        for (let def of definitions) {
+            if (def.type == "callable" && def.name == func) {
+                callable = def;
+                break;
+            }
         }
     }
 
@@ -41,20 +48,32 @@ async function generateSignatureHelp(document, position) {
         return null;
     }
 
-    let signature = callable.name + '(';
-    let parameters = [];
+    let signature = func + '(';
+    if (signature[0] == '.') {
+        signature = "[object]" + signature;
+    }
+    let parameters = []; 
     for (let i = 0; i < callable.params.length; ++i) {
         let param = callable.params[i];
-        parameters.push(new ParameterInformation(param));
-        if (i < callable.params.length - 1) {
-            signature += param + ', ';
+        let paramInfo = null;
+        if (isIntrinsic) {
+            paramInfo = new ParameterInformation(param.label, param.doc);
         } else {
-            signature += param;
+            paramInfo = new ParameterInformation(param);
+        }
+        parameters.push(paramInfo);
+        if (i < callable.params.length - 1) {
+            signature += paramInfo.label + ', ';
+        } else {
+            signature += paramInfo.label;
         }
     }
     signature += ')';
     let info = new SignatureInformation(signature);
     info.parameters = parameters;
+    if (isIntrinsic) {
+        info.documentation = new MarkDownString("`intrinsic`" + callable.desc);
+    }
 
     let help = new SignatureHelp();
     help.signatures.push(info);
