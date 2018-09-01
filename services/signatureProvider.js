@@ -57,7 +57,8 @@ async function generateSignatureHelp(document, position) {
         let param = callable.params[i];
         let paramInfo = null;
         if (isIntrinsic) {
-            paramInfo = new ParameterInformation(param.label, param.doc);
+            let docString = new MarkDownString("`arg" + i + "`" + param.doc);
+            paramInfo = new ParameterInformation(param.label, docString);
         } else {
             paramInfo = new ParameterInformation(param);
         }
@@ -72,7 +73,9 @@ async function generateSignatureHelp(document, position) {
     let info = new SignatureInformation(signature);
     info.parameters = parameters;
     if (isIntrinsic) {
-        info.documentation = new MarkDownString("`intrinsic`" + callable.desc);
+        info.documentation = new MarkDownString("`desc`" + callable.desc);
+    } else {
+        info.documentation = new MarkDownString("`desc` Documentation not available.");
     }
 
     let help = new SignatureHelp();
