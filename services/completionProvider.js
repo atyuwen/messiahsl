@@ -2,7 +2,7 @@ const vscode = require('vscode');
 const CompletionItem = vscode.CompletionItem;
 const CompletionItemKind = vscode.CompletionItemKind;
 const findAllDefinitions = require('./definitionProvider').findAllDefinitions;
-const intrinsicfunctions = require('./intrinsics').intrinsicfunctions;
+const intrinsics = require('./intrinsics');
 
 function matches(str, prefix) {
     return str.length >= prefix.length && str.substr(0, prefix.length).toLowerCase() == prefix;
@@ -24,9 +24,21 @@ async function getCompletionProposals(document, position) {
         }   
     }
 
-    for (let entry in intrinsicfunctions) {
+    for (let entry in intrinsics.intrinsicfunctions) {
         if (matches(entry, prefix)) {
             proposals.push(new CompletionItem(entry, CompletionItemKind.Interface));
+        }
+    }
+
+    for (let entry of intrinsics.intrinsicSemantics) {
+        if (matches(entry, prefix)) {
+            proposals.push(new CompletionItem(entry, CompletionItemKind.EnumMember));
+        }
+    }
+
+    for (let entry of intrinsics.intrinsicProperties) {
+        if (matches(entry, prefix)) {
+            proposals.push(new CompletionItem(entry, CompletionItemKind.Constant));
         }
     }
 
