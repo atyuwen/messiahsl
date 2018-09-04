@@ -75,7 +75,7 @@ async function generateSignatureHelp(document, position) {
     if (isIntrinsic) {
         info.documentation = new MarkDownString("`desc`" + callable.desc);
     } else {
-        info.documentation = new MarkDownString("`desc` Documentation not available.");
+        info.documentation = new MarkDownString("`desc` User defined function or macro.");
     }
 
     let help = new SignatureHelp();

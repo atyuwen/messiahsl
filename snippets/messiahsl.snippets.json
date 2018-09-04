@@ -1,6 +1,6 @@
 {
 	"If statement": {
-		"prefix": "if () {...}",
+		"prefix": "if () {···}",
 		"body": [
 			"if ($1)",
 			"{",
@@ -10,7 +10,7 @@
 		"description": "if statement"
 	},
 	"If-else statement": {
-		"prefix": "if () {...} else {...}",
+		"prefix": "if () {···} else {···}",
 		"body": [
 			"if ($1)",
 			"{",
@@ -24,7 +24,7 @@
 		"description": "if-else statement"
 	},
 	"Else statement": {
-		"prefix": "else {...}",
+		"prefix": "else {···}",
 		"body": [
 			"else",
 			"{",
@@ -34,7 +34,7 @@
 		"description": "else statement"
 	},
 	"For loop": {
-		"prefix": "for () {...}",
+		"prefix": "for () {···}",
 		"body": [
 			"for ($1)",
 			"{",
@@ -44,7 +44,7 @@
 		"description": "for loop"
 	},
 	"Structure": {
-		"prefix": "struct {...}",
+		"prefix": "struct {···}",
 		"body": [
 			"struct ${1:MyStruct}",
 			"{",
@@ -54,7 +54,7 @@
 		"description": "struct definition"
 	},
 	"CBuffer": {
-		"prefix": "cbuffer {...}",
+		"prefix": "cbuffer {···}",
 		"body": [
 			"cbuffer ${1:MyBuffer}",
 			"{",
@@ -64,7 +64,7 @@
 		"description": "cbuffer definition"
 	},
 	"Technique": {
-		"prefix": "technique {...}",
+		"prefix": "technique {···}",
 		"body": [
 			"technique ${1:MyTechnique}",
 			"{",
@@ -75,7 +75,7 @@
 		"description": "technique definition"
 	},
 	"Sampler": {
-		"prefix": "sampler {...}",
+		"prefix": "sampler {···}",
 		"body": [
 			"sampler ${1:MySampler} : layout(s${2:0})",
 			"{",

@@ -14,6 +14,8 @@ Provides syntax highlighting and code snippets, as well as some language service
 
 * `Go to definition` :  You can go to the definition of a symbol by pressing `F12`.
 * `Go to symbol in file` : You can navigate symbols inside current file.
+* Better auto-completion.
+* Auto prompt for function and method parameters.
 
 ## Requirements
 
