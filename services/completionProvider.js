@@ -15,30 +15,49 @@ async function getCompletionProposals(document, position) {
         return proposals;
     }
 
-    let prefix = document.getText(range).toLowerCase();
+    let word = document.getText(range);
+    let prefix = word.toLowerCase();
     let start = document.offsetAt(range.start);
     if (start > 0) {
         let char = document.getText()[start - 1];
         if (char == '.' || char == '@') {
             prefix = char + prefix;
-        }   
+        }
+    }
+
+    let proposalSet = new Set();
+    let addCompletionItem = (label, kind) => {
+        let char = label[0];
+        if (char == '.' || char == '@') {
+            label = label.substr(1);
+        }
+        if (!proposalSet.has(label)) {
+            proposals.push(new CompletionItem(label, kind));
+            proposalSet.add(label);
+        }
     }
 
     for (let entry in intrinsics.intrinsicfunctions) {
         if (matches(entry, prefix)) {
-            proposals.push(new CompletionItem(entry, CompletionItemKind.Interface));
+            addCompletionItem(entry, CompletionItemKind.Interface);
         }
     }
 
     for (let entry of intrinsics.intrinsicSemantics) {
         if (matches(entry, prefix)) {
-            proposals.push(new CompletionItem(entry, CompletionItemKind.EnumMember));
+            addCompletionItem(entry, CompletionItemKind.EnumMember);
         }
     }
 
     for (let entry of intrinsics.intrinsicProperties) {
         if (matches(entry, prefix)) {
-            proposals.push(new CompletionItem(entry, CompletionItemKind.Constant));
+            addCompletionItem(entry, CompletionItemKind.Constant);
+        }
+    }
+
+    for (let entry of intrinsics.keywords) {
+        if (matches(entry, prefix)) {
+            addCompletionItem(entry, CompletionItemKind.Keyword);
         }
     }
 
@@ -53,16 +72,18 @@ async function getCompletionProposals(document, position) {
             } else if (prefix[0] == '@') {
                 kind = CompletionItemKind.Property;
             }
-            proposals.push(new CompletionItem(def.name, kind));
+            addCompletionItem(def.name, kind);
         }
     }
 
-    for (let proposal of proposals) {
-        let char = proposal.label[0];
-        if (char == '.' || char == '@') {
-            proposal.label = proposal.label.substr(1);
-        }
+    let text = document.getText();
+    let wordPattern = "\\b" + word + "\\w+\\b";
+    let wordRegex = new RegExp(wordPattern, "ig");
+    let match = null;
+    while (match = wordRegex.exec(text)) {
+        addCompletionItem(match[0], CompletionItemKind.Text);
     }
+
     return proposals;
 }
 
