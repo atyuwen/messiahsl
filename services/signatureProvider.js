@@ -8,28 +8,48 @@ const intrinsicfunctions = require('./intrinsics').intrinsicfunctions;
 
 function reverseString(str) {
     return str.split('').reverse().join('');
-};
+}
 
-const callPattern = /\s*((?:,\s*\w+\s*)*)\(\s*(\w+\.?)\s*/;
+const funcPattern = /\s*(\w+\.?)/;
+
+function extractFunctionCall(str) {
+    let reverse = reverseString(str);
+    let index = 0;
+    let depth = 0;
+    for (let i = 0; i < reverse.length; ++i) {
+        let c = reverse[i];
+        if (c == '(') {
+            if (depth == 0) {
+                let suffix = reverse.substring(i + 1);
+                let match = funcPattern.exec(suffix);
+                if (!match || match.index != 0) {
+                    return null;
+                }
+                let func = reverseString(match[1]);
+                return [func, index];
+            } else {
+                depth -= 1;
+            }
+        } else if (c == ')') {
+            depth += 1;
+        } else if (c == ',') {
+            if (depth == 0) {
+                index += 1;
+            }
+        }
+    }
+    return null;
+}
 
 async function generateSignatureHelp(document, position) {
     let end = document.offsetAt(position);
     let start = Math.max(end - 200, 0);
     let str = document.getText().substring(start, end);
-    let reverse = reverseString(str);
-    let match = callPattern.exec(reverse);
-    if (!match || match.index != 0) {
+    let call = extractFunctionCall(str);
+    if (call == null)
         return null;
-    }
 
-    let func = reverseString(match[2]);
-    let index = 0;
-    for (let c of match[1]) {
-        if (c == ',') {
-            index += 1;
-        }
-    }
-
+    let [func, index] = call;
     let isIntrinsic = false;
     let callable = intrinsicfunctions[func];
     if (callable) {
