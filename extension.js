@@ -169,15 +169,16 @@ function ShaderLint(doc, full, fast) {
 
 async function GetOpenedDocuments() {
     let docs = [];
-    let doc = vscode.window.activeTextEditor.document;
-    docs.push(doc);
+    let editor = vscode.window.activeTextEditor;
+    docs.push(editor.document);
     while (true) {
         await vscode.commands.executeCommand("workbench.action.nextEditor");
-        let next = vscode.window.activeTextEditor.document;
-        if (!next || next == doc) {
+        let next = vscode.window.activeTextEditor;
+        if (next.document == editor.document) {
+            if (next == editor) editor.show();
             break;
         }
-        docs.push(next);
+        docs.push(next.document);
     }
     return docs;
 }

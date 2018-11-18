@@ -216,6 +216,17 @@ exports.definitionProvider = {
                                 results.push(definition.location);
                             }
                         }
+                        if (results.length == 0) {
+                            for (let [uri, cache] of DocumentDefinitions.entries()) {
+                                let ext = uri.fsPath.split('.').pop();
+                                if (ext.toLowerCase() != 'fxh') continue;
+                                for (let definition of cache.definitions) {
+                                    if (definition.name === symbol) {
+                                        results.push(definition.location);
+                                    }
+                                }
+                            }
+                        }
                         resolve(results);
                     }
                 ).catch(
