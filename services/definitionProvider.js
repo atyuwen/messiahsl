@@ -90,7 +90,7 @@ async function findAllDefinitionsRecursive(document, definitions, visited) {
                 let doc = await findDocumentByUri(header);
                 if (doc) {
                     findAllDefinitionsRecursive(doc, definitions, visited);
-                }           
+                }
             }
             return;
         }
@@ -188,6 +188,8 @@ async function findAllDefinitions(document) {
     await findAllDefinitionsRecursive(document, definitions, visited)
     return definitions;
 }
+
+exports.documentDefinitions = DocumentDefinitions;
 
 exports.findAllDefinitions = findAllDefinitions;
 

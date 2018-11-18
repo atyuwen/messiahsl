@@ -109,7 +109,7 @@
                         "LintFast",
                         "LintFull"
                     ],
-                    "default": "Lint",
+                    "default": "LintFast",
                     "description": "Choose an action to run when source file is saved."
                 },
                 "messiahsl.suppressWarning": {
@@ -122,8 +122,13 @@
                 },
                 "messiahsl.autoRefresh": {
                     "type": "boolean",
-                    "default": false,
+                    "default": true,
                     "description": "Auto refresh shader source when a fast-lint or full-lint is completed."
+                },
+                "messiahsl.autoLintHeader": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Auto lint shader source when a dependent header file is changed."
                 }
             }
         }

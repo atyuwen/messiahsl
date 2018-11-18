@@ -3,8 +3,10 @@
 const vscode = require('vscode');
 const documentSymbolProvider = require('./services/symbolProvider').documentSymbolProvider;
 const definitionProvider = require('./services/definitionProvider').definitionProvider;
+const documentDefinitions = require('./services/definitionProvider').documentDefinitions;
 const signatureProvider = require('./services/signatureProvider').signatureProvider;
 const completionProvider = require('./services/completionProvider').completionProvider;
+const findAllHeaders = require('./services/headerProvider').findAllHeaders;
 
 // Global definitions;
 let outputChannel = null;
@@ -104,7 +106,7 @@ function ShowWebview(shader, out) {
     panel.webview.html = GenerateWebviewContent();
 }
 
-function ShaderLint(context, full, fast) {
+function ShaderLint(doc, full, fast) {
     diagnosticCollection.clear();
     outputChannel.clear();
 
@@ -123,9 +125,8 @@ function ShaderLint(context, full, fast) {
         statusBarItem.text = "";
         statusBarItem.hide();
         return;
-    }
+    } 
 
-    let doc = vscode.window.activeTextEditor.document;
     let parts = doc.fileName.split(".");
     let shader = parts[0].replace(/\\/g, '/');
     shader = shader.substr(shader.indexOf("Shaders/") + 8);
@@ -145,9 +146,9 @@ function ShaderLint(context, full, fast) {
     exec(cmd, (err, stdout, stderr) => {
       if (err) {
         if (!ShowDiagnostics(stderr, config.suppressWarning)) {
-            let error = stdout;
-            if (error == "") {
-                error = "An internal error has occurred in Messiah shader compiler."
+            let error = "An internal error has occurred in Messiah shader compiler.";
+            if (stdout == "") {
+                error = error + "\n" + stdout; 
             }
             outputChannel.appendLine(error);
             outputChannel.show(true);
@@ -166,6 +167,34 @@ function ShaderLint(context, full, fast) {
     });
 }
 
+async function GetOpenedDocuments() {
+    let docs = [];
+    let doc = vscode.window.activeTextEditor.document;
+    docs.push(doc);
+    while (true) {
+        await vscode.commands.executeCommand("workbench.action.nextEditor");
+        let next = vscode.window.activeTextEditor.document;
+        if (!next || next == doc) {
+            break;
+        }
+        docs.push(next);
+    }
+    return docs;
+}
+
+async function ShaderLintHeader(doc, full, fast) {
+    let docs = await GetOpenedDocuments();
+    for (let document of docs) {
+        let ext = document.fileName.split('.').pop();
+        if (ext.toLowerCase() == "fx") {
+            let headers = await findAllHeaders(document);
+            if (headers.has(doc.uri)) {
+                ShaderLint(document, full, fast);
+            }
+        }
+    }
+}
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 function activate(context) {
@@ -181,22 +210,25 @@ function activate(context) {
         // The code you place here will be executed every time your command is executed
         statusBarItem.text = "$(sync~spin) Running a simple lint... ";
         statusBarItem.show();
-        await vscode.window.activeTextEditor.document.save();
-        ShaderLint(context, false, false);
+        let doc = vscode.window.activeTextEditor.document;
+        await doc.save();
+        ShaderLint(doc, false, false);
     });
     let cmd1 = vscode.commands.registerCommand('extension.ShaderLintFast', async function () {
         // The code you place here will be executed every time your command is executed
         statusBarItem.text = "$(sync~spin) Running a fast lint... ";
         statusBarItem.show();
-        await vscode.window.activeTextEditor.document.save();
-        ShaderLint(context, true, true);
+        let doc = vscode.window.activeTextEditor.document;
+        await doc.save();
+        ShaderLint(doc, true, true);
     });
     let cmd2 = vscode.commands.registerCommand('extension.ShaderLintFull', async function () {
         // The code you place here will be executed every time your command is executed
         statusBarItem.text = "$(sync~spin) A full lint might take a very long time, please wait... ";
         statusBarItem.show();
-        await vscode.window.activeTextEditor.document.save();
-        ShaderLint(context, true, false);
+        let doc = vscode.window.activeTextEditor.document;
+        await doc.save();
+        ShaderLint(doc, true, false);
     });
 
     context.subscriptions.push(cmd0);
@@ -205,15 +237,23 @@ function activate(context) {
 
     let config = vscode.workspace.getConfiguration('messiahsl');
     if (config.runOnSave != "Disabled") {
-        let onsave = vscode.workspace.onDidSaveTextDocument((event => {
-                let ext = event.fileName.split('.').pop();
+        let onsave = vscode.workspace.onDidSaveTextDocument((doc => {
+                let ext = doc.fileName.split('.').pop();
                 if (ext.toLowerCase() == 'fx' && statusBarItem.text == "") {
                     if (config.runOnSave == "Lint") {
-                        ShaderLint(context, false, false);
+                        ShaderLint(doc, false, false);
                     } else if (config.runOnSave == "LintFast") {
-                        ShaderLint(context, true, true);
+                        ShaderLint(doc, true, true);
                     } else if (config.runOnSave == "LintFull") {
-                        ShaderLint(context, true, false);
+                        ShaderLint(doc, true, false);
+                    }
+                } else if (ext.toLowerCase() == 'fxh' && config.autoLintHeader) {
+                    if (config.runOnSave == "Lint") {
+                        ShaderLintHeader(doc, false, false);
+                    } else if (config.runOnSave == "LintFast") {
+                        ShaderLintHeader(doc, true, true);
+                    } else if (config.runOnSave == "LintFull") {
+                        ShaderLintHeader(doc, true, false);
                     }
                 }
             }
