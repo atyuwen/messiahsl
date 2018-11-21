@@ -2,7 +2,7 @@
     "name": "messiahsl",
     "displayName": "MessiahSL",
     "description": "Messiah shader language extension",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "publisher": "atyuwen",
     "icon": "icon.png",
     "readme": "README.md",
@@ -127,7 +127,7 @@
                 },
                 "messiahsl.autoLintHeader": {
                     "type": "boolean",
-                    "default": true,
+                    "default": false,
                     "description": "Auto lint shader source when a dependent header file is changed."
                 }
             }

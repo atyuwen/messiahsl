@@ -6,7 +6,7 @@ All notable changes to the MessiahSL extension will be documented in this file.
 
 * Improved sigature provider.
 
-* Auto lint shaders when dependent `fxh` file is changed.
+* Auto lint shader source when a dependent `.fxh` file is changed.
 
 ## 1.0.0
 
