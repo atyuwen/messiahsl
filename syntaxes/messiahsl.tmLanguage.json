@@ -22,7 +22,7 @@
 		},
 		{
 			"name": "support.variable.semantic.PB.messiahsl",
-			"match": "(?<=\\:\\s|\\:)PB_(World(View)?|WorldViewProj|LastWorldViewProjTex|Color|Param2?|VirtualLitDir|VirtualLitColor|CamearDir|TintColor[1-3]|ShadowBias)\\b"
+			"match": "(?<=\\:\\s|\\:)PB_(World(View)?|WorldViewProj|LastWorldViewProjTex|Color|Param2?|VirtualLitDir|VirtualLitColor|CamearDir|TintColor[1-3]|ShadowBias|WBasis[X-Z]|BBMin|BBMax)\\b"
 		},
 		{
 			"name": "support.variable.semantic.PL.messiahsl",

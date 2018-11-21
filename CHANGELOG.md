@@ -2,6 +2,12 @@
 
 All notable changes to the MessiahSL extension will be documented in this file.
 
+## 1.2.0
+
+* Improved sigature provider.
+
+* Auto lint shaders when dependent `fxh` file is changed.
+
 ## 1.0.0
 
 * Better auto-completion.

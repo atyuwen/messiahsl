@@ -374,7 +374,7 @@ exports.intrinsicfunctions = {
         link: "https://msdn.microsoft.com/en-us/library/windows/desktop/bb509662(v=vs.85).aspx"
     },
     step: {
-        desc: "Compares two values, returning 0 or 1 based on which value is greater.",
+        desc: "Compares two values, returning 0 or 1 based on which value is greater. formula: (x >= y) ? 1 : 0.",
         params: [
             { label: 'y', doc: "The first floating-point value to compare." },
             { label: 'x', doc: "The second floating-point value to compare." }
@@ -452,7 +452,8 @@ exports.intrinsicfunctions = {
     ".Load": {
         desc: "Load value from a texture object.",
         params: [
-            { label: 'index', doc: "The specified index." }
+            { label: 'index', doc: "The specified index." },
+            { label: '[sample]', doc: "The specified sample for multisampled texture." }
         ],
     },
     ".Store": {
@@ -532,6 +533,11 @@ exports.intrinsicSemantics = [
     "PB_TintColor2",
     "PB_TintColor3",
     "PB_ShadowBias",
+    "PB_WBasisX",
+    "PB_WBasisY",
+    "PB_WBasisZ",
+    "PB_BBMin",	
+    "PB_BBMax",
     "PL_Light0",
     "PL_Light1",
     "PL_Light2",
