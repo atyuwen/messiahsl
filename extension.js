@@ -127,9 +127,16 @@ function ShaderLint(doc, full, fast) {
         return;
     } 
 
-    let parts = doc.fileName.split(".");
-    let shader = parts[0].replace(/\\/g, '/');
-    shader = shader.substr(shader.indexOf("Shaders/") + 8);
+    let shader = doc.fileName;
+    if (shader.indexOf("ShaderGraph.local") >= 0) {
+        let patGuid = /{(.*)}/i;
+        let guid = patGuid.exec(shader);
+        shader = guid[1];
+    } else {
+        let parts = doc.fileName.split(".");
+        shader = parts[0].replace(/\\/g, '/');
+        shader = shader.substr(shader.indexOf("Shaders/") + 8);
+    }
 
     let cmd = linter + " --shader=" + shader;
     if (config.autoRefresh) {
