@@ -71,8 +71,8 @@ function ShowDiagnostics(error, suppressWarning) {
             continue;
         }
 
-        let row = parseInt(match[2]) - 1;
-        let col = parseInt(match[3]) - 1;
+        let row = Math.max(parseInt(match[2]) - 1, 0);
+        let col = Math.max(parseInt(match[3]) - 1, 0);
         let diag = [new vscode.Diagnostic(new vscode.Range(row, col, row, col + 1000), message, servity)];
         let uri = vscode.Uri.file(ResolveFilePath(match[1]));
  
