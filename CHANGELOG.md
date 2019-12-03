@@ -2,6 +2,10 @@
 
 All notable changes to the MessiahSL extension will be documented in this file.
 
+## 1.4.0
+
+* Added shader graph/script support.
+
 ## 1.2.0
 
 * Improved sigature provider.

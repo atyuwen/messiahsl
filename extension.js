@@ -128,7 +128,10 @@ function ShaderLint(doc, full, fast) {
     } 
 
     let shader = doc.fileName;
-    if (shader.indexOf("ShaderGraph.local") >= 0) {
+    let repository = "";
+    if (shader.indexOf(".local") >= 0) {
+        let patRepo = /[\/\\]([^\/\\]+)\.local/i;
+        repository = patRepo.exec(shader)[1];
         let patGuid = /{(.*)}/i;
         let guid = patGuid.exec(shader);
         shader = guid[1];
@@ -147,6 +150,10 @@ function ShaderLint(doc, full, fast) {
     }
     if (full) {
         cmd = cmd + " --full=1";
+    }
+
+    if (repository != "") {
+        cmd = cmd + " --repo=" + repository;
     }
 
     const { exec } = require('child_process');
