@@ -11,7 +11,7 @@ const includePattern = /^[^\S\n]*#\s*include\s*[<"](.*)[>"]/.source;
 const definitionPatterns = [
     {
         type: "regular",
-        regex: /^[^\S\n]*(?:struct|technique|texture2D|sampler)\s+([a-zA-Z_][a-zA-Z0-9_]*)/.source,
+        regex: /^[^\S\n]*(?:struct|technique|texture2D|textureCube|texture2DArray|sampler|sampler2DArray|samplerCUBE|SamplerComparisonState|SamplerComparisonStateArray)\s+([a-zA-Z_][a-zA-Z0-9_]*)/.source,
     },
     {
         type: "regular",
@@ -24,7 +24,7 @@ const definitionPatterns = [
     {
         type: "cbuffer",
         regex: /^[^\S\n]*cbuffer\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*{/.source,
-        end:   /^[^\S\n]*(?:{|}|struct|technique|texture2D|sampler|@})\W/.source,
+        end:   /^[^\S\n]*(?:{|}|struct|technique|texture2D|textureCube|texture2DArray|sampler|sampler2DArray|samplerCUBE|SamplerComparisonState|SamplerComparisonStateArray|@})\W/.source,
         field: /^[^\S\n]*[a-zA-Z_][a-zA-Z0-9_]*[^\S\n]+([a-zA-Z_][a-zA-Z0-9_]*)/.source,
     },
     {

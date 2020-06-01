@@ -5,6 +5,14 @@
 	"name": "MessiahSL",
 	"patterns": [
 		{
+			"name":"support.type.texture.messiahsl",
+			"match": "(?<=\\:\\s|\\:)texture2D|textureCube|texture2DArray\\b"
+		},
+		{
+			"name":"support.type.sampler.messiahsl",
+			"match": "(?<=\\:\\s|\\:)sampler|sampler2DArray|samplerCUBE|SamplerComparisonState(Array)?\\b"
+		},
+		{
 			"name": "support.variable.semantic.messiahsl",
 			"match": "(?<=\\:\\s|\\:)(?i:TEXCOORDN)\\b"
 		},
@@ -38,7 +46,7 @@
 		},
 		{
 			"name": "meta.object-literal.key.fx.messiahsl",
-			"match": "\\b(Predict|Fallback|Texture|Address|MaxMipLevel|SRGB|Name|Description|Visible|AffectedTex|Default|MinFilter|MagFilter|MipFilter)\\b"
+			"match": "\\b(Predict|Fallback|Texture|Address|MaxMipLevel|SRGB|Name|Description|Visible|AffectedTex|Default|MinFilter|MagFilter|MipFilter|Dynamic)\\b"
 		},	
 		{
 			"name": "support.constant.property-value.fx.filter.messiahsl",
