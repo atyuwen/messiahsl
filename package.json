@@ -120,6 +120,11 @@
                     "default": null,
                     "description": "Specify which warnings will be suppressed. use '*' to suppress all."
                 },
+                "messiahsl.legacyUniformLayout": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Use legacy uniform layout."
+                },
                 "messiahsl.autoRefresh": {
                     "type": "boolean",
                     "default": true,

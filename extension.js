@@ -151,7 +151,9 @@ function ShaderLint(doc, full, fast) {
     if (full) {
         cmd = cmd + " --full=1";
     }
-
+    if (!config.legacyUniformLayout) {
+        cmd = cmd + " --legacy=0";
+    }
     if (repository != "") {
         cmd = cmd + " --repo=" + repository;
     }
@@ -161,7 +163,7 @@ function ShaderLint(doc, full, fast) {
       if (err) {
         if (!ShowDiagnostics(stderr, config.suppressWarning)) {
             let error = "An internal error has occurred in Messiah shader compiler.";
-            if (stdout == "") {
+            if (stdout != "") {
                 error = error + "\n" + stdout; 
             }
             outputChannel.appendLine(error);
