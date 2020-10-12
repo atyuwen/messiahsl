@@ -456,6 +456,13 @@ exports.intrinsicfunctions = {
             { label: '[sample]', doc: "The specified sample for multisampled texture." }
         ],
     },
+    ".SubpassLoad": {
+        desc: "Load value from a SubpassInput / SubpassInputMS.",
+        params: [
+            { label: 'position', doc: "Should pass SV_Position.xy." },
+            { label: '[sample]', doc: "The specified sample for SubpassInputMS." }
+        ],
+    },
     ".Store": {
         desc: "Store value to a texture object.",
         params: [

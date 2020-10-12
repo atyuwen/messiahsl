@@ -11,7 +11,31 @@ const includePattern = /^[^\S\n]*#\s*include\s*[<"](.*)[>"]/.source;
 const definitionPatterns = [
     {
         type: "regular",
-        regex: /^[^\S\n]*(?:struct|technique|texture2D|textureCube|texture2DArray|sampler|sampler2DArray|samplerCUBE|SamplerComparisonState|SamplerComparisonStateArray)\s+([a-zA-Z_][a-zA-Z0-9_]*)/.source,
+        regex: /^[^\S\n]*(?:struct|technique)\s+([a-zA-Z_][a-zA-Z0-9_]*)/.source,
+    },
+    {
+        type: "regular",
+        regex: /^[^\S\n]*(?:[sS]ampler(?:1D|2D|3D|CUBE|_state|State|ComparisonState)?)\s+([a-zA-Z_][a-zA-Z0-9_]*)/.source,
+    },
+    {
+        type: "regular",
+        regex: /^[^\S\n]*(?:[tT]exture(?:1D|1DArray|2D|2DArray|2DMS|2DMSArray|3D|Cube|CubeArray))(?:\s*<\s*[a-zA-Z_][a-zA-Z0-9_]*\s*>)?\s+([a-zA-Z_][a-zA-Z0-9_]*)/.source,
+    },
+    {
+        type: "regular",
+        regex: /^[^\S\n]*(?:out\s+)?(?:RWTexture(?:1D|1DArray|2D|2DArray|3D))(?:\s*<\s*[a-zA-Z_][a-zA-Z0-9_]*\s*>)?\s+([a-zA-Z_][a-zA-Z0-9_]*)/.source,
+    },
+    {
+        type: "regular",
+        regex: /^[^\S\n]*(?:SubpassInput(?:MS)?)(?:\s*<\s*[a-zA-Z_][a-zA-Z0-9_]*\s*>)?\s+([a-zA-Z_][a-zA-Z0-9_]*)/.source,
+    },
+    {
+        type: "regular",
+        regex: /^[^\S\n]*(?:(?:Append|Consume|RW)?StructuredBuffer)(?:\s*<\s*[a-zA-Z_][a-zA-Z0-9_]*\s*>)?\s+([a-zA-Z_][a-zA-Z0-9_]*)/.source,
+    },
+    {
+        type: "regular",
+        regex: /^[^\S\n]*(?:(?:RW)?(?:ByteAddress)Buffer)\s+([a-zA-Z_][a-zA-Z0-9_]*)/.source,
     },
     {
         type: "regular",
@@ -22,9 +46,13 @@ const definitionPatterns = [
         regex: /^[^\S\n]*#\s*define\s+([a-zA-Z_][a-zA-Z0-9_]*)\s/.source,
     },
     {
+        type: "regular",
+        regex: /^[^\S\n]*groupshared\s+[a-zA-Z_][a-zA-Z0-9_]*\s+([a-zA-Z][a-zA-Z0-9_]*)/.source,
+    },
+    {
         type: "cbuffer",
         regex: /^[^\S\n]*cbuffer\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*{/.source,
-        end:   /^[^\S\n]*(?:{|}|struct|technique|texture2D|textureCube|texture2DArray|sampler|sampler2DArray|samplerCUBE|SamplerComparisonState|SamplerComparisonStateArray|@})\W/.source,
+        end:   /^[^\S\n]*(?:{|}|struct|technique|(?:[sS]ampler(?:1D|2D|3D|CUBE|_state|State|ComparisonState)?)|(?:[tT]exture(?:1D|1DArray|2D|2DArray|2DMS|2DMSArray|3D|Cube|CubeArray))|(?:RWTexture(?:1D|1DArray|2D|2DArray|3D))|(?:SubpassInput(?:MS)?)|(?:(?:Append|Consume|RW)?StructuredBuffer)|(?:(?:RW)?(?:ByteAddress)Buffer)|out|groupshared|@})\W/.source,
         field: /^[^\S\n]*[a-zA-Z_][a-zA-Z0-9_]*[^\S\n]+([a-zA-Z_][a-zA-Z0-9_]*)/.source,
     },
     {
