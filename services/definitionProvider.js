@@ -35,7 +35,7 @@ const definitionPatterns = [
     },
     {
         type: "regular",
-        regex: /^[^\S\n]*(?:(?:RW)?(?:ByteAddress)Buffer)\s+([a-zA-Z_][a-zA-Z0-9_]*)/.source,
+        regex: /^[^\S\n]*(?:(?:RW)?(?:ByteAddress)?Buffer)\s+([a-zA-Z_][a-zA-Z0-9_]*)/.source,
     },
     {
         type: "regular",

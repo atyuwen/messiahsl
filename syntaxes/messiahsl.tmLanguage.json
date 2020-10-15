@@ -5,12 +5,24 @@
 	"name": "MessiahSL",
 	"patterns": [
 		{
-			"name":"support.type.texture.messiahsl",
-			"match": "(?<=\\:\\s|\\:)texture2D|textureCube|texture2DArray\\b"
+			"name":"support.type.sampler.messiahsl",
+			"match": "\\b(sampler(1D|2D|3D|CUBE|_state)?|Sampler(Comparison)?State)\\b"
 		},
 		{
-			"name":"support.type.sampler.messiahsl",
-			"match": "(?<=\\:\\s|\\:)sampler|sampler2DArray|samplerCUBE|SamplerComparisonState(Array)?\\b"
+			"name":"support.type.texture.messiahsl",
+			"match": "\\b[tT]exture(1D|1DArray|2D|2DArray|2DMS|2DMSArray|3D|Cube|CubeArray)\\b"
+		},
+		{
+			"name":"support.type.rwtexture.messiahsl",
+			"match": "\\bRWTexture(1D|1DArray|2D|2DArray|3D)\\b"
+		},
+		{
+			"name":"support.type.buffer.messiahsl",
+			"match": "\\b((Append|Consume|RW)?StructuredBuffer|(RW)?(ByteAddress)?Buffer)\\b"
+		},
+		{
+			"name":"support.type.subpass.messiahsl",
+			"match": "\\bSubpassInput(MS)?\\b"
 		},
 		{
 			"name": "support.variable.semantic.messiahsl",
