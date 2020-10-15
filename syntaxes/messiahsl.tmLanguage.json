@@ -5,6 +5,10 @@
 	"name": "MessiahSL",
 	"patterns": [
 		{
+			"name": "storage.modifier.qualifiers.messiahsl",
+			"match": "\\b(relaxed)\\b"
+		},
+		{
 			"name":"support.type.sampler.messiahsl",
 			"match": "\\b(sampler(1D|2D|3D|CUBE|_state)?|Sampler(Comparison)?State)\\b"
 		},
