@@ -137,7 +137,7 @@ function ShaderLint(doc, full, fast) {
         shader = guid[1];
     } else {
         let parts = doc.fileName.split(".");
-        shader = parts[0].replace(/\\/g, '/');
+        shader = parts[parts.length - 2].replace(/\\/g, '/');
         shader = shader.substr(shader.indexOf("Shaders/") + 8);
     }
 
